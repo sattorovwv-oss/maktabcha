@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>SchoolFlow - Школьный Органайзер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-primary-dark: #4f46e5;
+            --color-bg: #ffffff;
+            --color-bg-secondary: #f8f9fa;
+            --color-text: #1a1a2e;
+            --color-text-secondary: #6b7280;
+            --color-border: #e5e7eb;
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+            --color-card: #ffffff;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+            --radius: 16px;
+            --radius-sm: 8px;
+        }
+
+        [data-theme="dark"] {
+            --color-bg: #0f1419;
+            --color-bg-secondary: #1a1f2e;
+            --color-text: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-border: #334155;
+            --color-card: #1a1f2e;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: splashFadeOut 0.5s ease-in-out 1.8s forwards;
+        }
+
+        @keyframes splashFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: splashIn 0.8s ease-out;
+        }
+
+        @keyframes splashIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .splash-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .splash-subtitle {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            animation: fadeInUp 0.8s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--color-bg);
+        }
+
+        .app-header {
+            padding: 20px;
+            padding-top: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--color-bg-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--color-text);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page {
+            display: none;
+            animation: pageSlideIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--color-card);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-around;
+            padding-bottom: max(0px, env(safe-area-inset-bottom));
+            max-width: 640px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 12px 0 8px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            transform: translateX(-50%);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        /* Page Content */
+        .page-content {
+            padding: 20px;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .date-text {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background-color: var(--color-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border);
+            transition: all 0.2s ease;
+        }
+
+        .card:active {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .current-lesson {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            color: white;
+            border: none;
+        }
+
+        .lesson-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lesson-icon {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .lesson-meta {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--color-border);
+            gap: 12px;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item.completed {
+            opacity: 0.5;
+        }
+
+        .lesson-time {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            min-width: 50px;
+        }
+
+        .lesson-name {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .schedule-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background-color: var(--color-bg-secondary);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .day-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: var(--color-card);
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .day-btn.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:active {
+            background-color: var(--color-primary-dark);
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-bg-secondary);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:active {
+            background-color: var(--color-border);
+        }
+
+        .btn-danger {
+            background-color: var(--color-error);
+            color: white;
+        }
+
+        .btn-danger:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: flex-end;
+            z-index: 1000;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: var(--color-card);
+            width: 100%;
+            border-radius: var(--radius) var(--radius) 0 0;
+            padding: 24px 20px;
+            padding-bottom: max(24px, env(safe-area-inset-bottom));
+            animation: modalSlideUp 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--color-text);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .subject-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .subject-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            animation: toastSlideUp 0.3s ease;
+            z-index: 2000;
+        }
+
+        @keyframes toastSlideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .homework-item {
+            background-color: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .homework-item.completed {
+            opacity: 0.6;
+        }
+
+        .homework-checkbox {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            cursor: pointer;
+        }
+
+        .homework-content {
+            flex: 1;
+        }
+
+        .homework-subject {
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 4px;
+        }
+
+        .homework-task {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            word-break: break-word;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-weight: 500;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.875rem;
+            background-color: var(--color-card);
+            transition: all 0.2s ease;
+        }
+
+        .theme-option.active {
+            border-color: var(--color-primary);
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .settings-header {
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 20px 0 12px 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .school-info {
+            background-color: var(--color-bg-secondary);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+
+        .school-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .school-class {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        .next-lesson-card {
+            background-color: var(--color-bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .next-lesson-label {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .next-lesson-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-lesson-time {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .next-lesson-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-top: 8px;
+        }
+
+        .time-indicator {
+            display: inline-block;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .app-nav {
+                max-width: 100%;
+            }
+
+            .splash-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 100%;
+                max-height: 100vh;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .container {
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                max-height: 90vh;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-title">SchoolFlow</div>
+            <div class="splash-subtitle">A product by NEXVIRO</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-title" id="pageTitle">SchoolFlow</div>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle" title="Тема">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="app-content">
+            <!-- Today Page -->
+            <div class="page active" data-page="today">
+                <div class="page-content">
+                    <div class="greeting" id="greeting">Доброе утро 👋</div>
+                    <div class="date-text" id="dateText"></div>
+
+                    <div id="currentLessonContainer"></div>
+                    <div id="nextLessonContainer"></div>
+
+                    <div class="card">
+                        <div class="card-header">Сегодня</div>
+                        <div id="todayLessons"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">Завтра</div>
+                        <div id="tomorrowLessons"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Page -->
+            <div class="page" data-page="schedule">
+                <div class="page-content">
+                    <div class="schedule-header" id="daySelector"></div>
+                    <div id="scheduleContent"></div>
+                    <button class="btn btn-primary btn-block" id="addLessonBtn" style="margin-top: 20px;">
+                        + Добавить урок
+                    </button>
+                </div>
+            </div>
+
+            <!-- Homework Page -->
+            <div class="page" data-page="homework">
+                <div class="page-content">
+                    <div id="homeworkContent"></div>
+                    <button class="btn btn-primary btn-block" id="addHomeworkBtn" style="margin-top: 20px;">
+                        + Добавить задание
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" data-page="settings">
+                <div class="page-content">
+                    <div id="settingsContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="app-nav">
+            <button class="nav-item active" data-page="today">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Сегодня
+            </button>
+            <button class="nav-item" data-page="schedule">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Расписание
+            </button>
+            <button class="nav-item" data-page="homework">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                ДЗ
+            </button>
+            <button class="nav-item" data-page="settings">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Ещё
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="lessonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Добавить урок
+                <button class="modal-close" id="closeLessonModal">✕</button>
+            </div>
+            <form id="lessonForm">
+                <div class="form-group">
+                    <label class="form-label">День недели</label>
+                    <select id="lessonDay" class="form-select" required>
+                        <option value="0">Понедельник</option>
+                        <option value="1">Вторник</option>
+                        <option value="2">Среда</option>
+                        <option value="3">Четверг</option>
+                        <option value="4">Пятница</option>
+                        <option value="5">Суббота</option>
+                        <option value="6">Воскресенье</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Предмет</label>
+                    <select id="lessonSubject" class="form-select" required>
+                        <option value="">Выберите предмет</option>
+                        <option value="Математика">📐 Математика</option>
+                        <option value="Русский язык">📝 Русский язык</option>
+                        <option value="Английский">🇬🇧 Английский</option>
+                        <option value="История">📜 История</option>
+                        <option value="Информатика">💻 Информатика</option>
+                        <option value="Физика">⚛️ Физика</option>
+                        <option value="Химия">🧪 Химия</option>
+                        <option value="Биология">🔬 Биология</option>
+                        <option value="Физкультура">⚽ Физкультура</option>
+                        <option value="Искусство">🎨 Искусство</option>
+                        <option value="Музыка">🎵 Музыка</option>
+                        <option value="Технология">🔧 Технология</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Начало</label>
+                    <input type="time" id="lessonStart" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Конец</label>
+                    <input type="time" id="lessonEnd" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Кабинет</label>
+                    <input type="text" id="lessonRoom" class="form-input" placeholder="Например, 204">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Учитель</label>
+                    <input type="text" id="lessonTeacher" class="form-input" placeholder="Например, А.И. Петров">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="homeworkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Добавить задание
+                <button class="modal-close" id="closeHomeworkModal">✕</button>
+            </div>
+            <form id="homeworkForm">
+                <div class="form-group">
+                    <label class="form-label">Предмет</label>
+                    <select id="homeworkSubject" class="form-select" required>
+                        <option value="">Выберите предмет</option>
+                        <option value="Математика">📐 Математика</option>
+                        <option value="Русский язык">📝 Русский язык</option>
+                        <option value="Английский">🇬🇧 Английский</option>
+                        <option value="История">📜 История</option>
+                        <option value="Информатика">💻 Информатика</option>
+                        <option value="Физика">⚛️ Физика</option>
+                        <option value="Химия">🧪 Химия</option>
+                        <option value="Биология">🔬 Биология</option>
+                        <option value="Физкультура">⚽ Физкультура</option>
+                        <option value="Искусство">🎨 Искусство</option>
+                        <option value="Музыка">🎵 Музыка</option>
+                        <option value="Технология">🔧 Технология</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Задание</label>
+                    <textarea id="homeworkTask" class="form-input" placeholder="Например, §24 №5, 6, 7" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="schoolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Настроить профиль
+                <button class="modal-close" id="closeSchoolModal">✕</button>
+            </div>
+            <form id="schoolForm">
+                <div class="form-group">
+                    <label class="form-label">Название школы</label>
+                    <input type="text" id="schoolName" class="form-input" placeholder="Школа №1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Класс</label>
+                    <select id="schoolClass" class="form-select">
+                        <option value="">Выберите класс</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Буква класса</label>
+                    <select id="schoolLetter" class="form-select">
+                        <option value="">Выберите букву</option>
+                        <option value="А">А</option>
+                        <option value="Б">Б</option>
+                        <option value="В">В</option>
+                        <option value="Г">Г</option>
+                        <option value="Д">Д</option>
+                        <option value="Е">Е</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==================== APP STATE ====================
+        const appState = {
+            school: {
+                name: '',
+                class: '',
+                letter: ''
+            },
+            schedule: {}, // { dayOfWeek: [ { subject, start, end, room, teacher } ] }
+            homework: [], // [ { id, subject, task, completed } ]
+            theme: 'system'
+        };
+
+        // ==================== CONSTANTS ====================
+        const DAYS_OF_WEEK = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+        const SUBJECT_ICONS = {
+            'Математика': '📐',
+            'Русский язык': '📝',
+            'Английский': '🇬🇧',
+            'История': '📜',
+            'Информатика': '💻',
+            'Физика': '⚛️',
+            'Химия': '🧪',
+            'Биология': '🔬',
+            'Физкультура': '⚽',
+            'Искусство': '🎨',
+            'Музыка': '🎵',
+            'Технология': '🔧'
+        };
+
+        // ==================== STORAGE ====================
+        function saveState() {
+            localStorage.setItem('schoolflow_state', JSON.stringify(appState));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('schoolflow_state');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                appState.school = parsed.school || appState.school;
+                appState.schedule = parsed.schedule || appState.schedule;
+                appState.homework = parsed.homework || appState.homework;
+            }
+        }
+
+        // ==================== THEME ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('schoolflow_theme') || 'system';
+            appState.theme = savedTheme;
+            applyTheme();
+        }
+
+        function applyTheme() {
+            let theme = appState.theme;
+            if (theme === 'system') {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('schoolflow_theme', appState.theme);
+        }
+
+        function toggleTheme(mode) {
+            appState.theme = mode;
+            applyTheme();
+            updateSettingsUI();
+        }
+
+        // ==================== DATE & TIME ====================
+        function updateDateInfo() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', weekday: 'long' };
+            const dateStr = now.toLocaleDateString('ru-RU', options);
+            document.getElementById('dateText').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+            // Update greeting based on time
+            const hour = now.getHours();
+            let greeting = 'Доброе утро 👋';
+            if (hour >= 12 && hour < 18) {
+                greeting = 'Добрый день 👋';
+            } else if (hour >= 18) {
+                greeting = 'Добрый вечер 👋';
+            }
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        function getWeekday(offset = 0) {
+            const date = new Date();
+            date.setDate(date.getDate() + offset);
+            return date.getDay() === 0 ? 6 : date.getDay() - 1;
+        }
+
+        // ==================== LESSONS ====================
+        function getSubjectIcon(subject) {
+            return SUBJECT_ICONS[subject] || '📚';
+        }
+
+        function parseTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes, 0);
+            return date;
+        }
+
+        function getCurrentLesson() {
+            const now = new Date();
+            const today = getWeekday();
+            const lessons = appState.schedule[today] || [];
+
+            for (const lesson of lessons) {
+                const start = parseTime(lesson.start);
+                const end = parseTime(lesson.end);
+                if (now >= start && now < end) {
+                    return { ...lesson, progress: Math.round((now - start) / (end - start) * 100) };
+                }
+            }
+            return null;
+        }
+
+        function getNextLesson() {
+            const now = new Date();
+            const today = getWeekday();
+            const lessons = appState.schedule[today] || [];
+
+            for (const lesson of lessons) {
+                const end = parseTime(lesson.end);
+                if (now < end) {
+                    const start = parseTime(lesson.start);
+                    const diffMs = start - now;
+                    const diffMins = Math.round(diffMs / 60000);
+                    return { ...lesson, minutesUntil: diffMins };
+                }
+            }
+            return null;
+        }
+
+        function renderCurrentLesson() {
+            const container = document.getElementById('currentLessonContainer');
+            const current = getCurrentLesson();
+
+            if (!current) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="card current-lesson">
+                    <div class="card-header" style="color: rgba(255, 255, 255, 0.7);">СЕЙЧАС</div>
+                    <div class="lesson-title">
+                        <span class="lesson-icon">${getSubjectIcon(current.subject)}</span>
+                        ${current.subject}
+                    </div>
+                    <div class="lesson-meta">
+                        ${current.room ? `Кабинет ${current.room}` : ''}
+                        <br>
+                        ${current.start} — ${current.end}
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${current.progress}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNextLesson() {
+            const container = document.getElementById('nextLessonContainer');
+            const next = getNextLesson();
+            const current = getCurrentLesson();
+
+            if (!next || next === current) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const minutesStr = next.minutesUntil <= 1 ? 'минуту' : next.minutesUntil <= 4 ? 'минуты' : 'минут';
+            container.innerHTML = `
+                <div class="next-lesson-card">
+                    <div class="next-lesson-label">Следующий урок</div>
+                    <div class="next-lesson-title">
+                        <span>${getSubjectIcon(next.subject)}</span>
+                        ${next.subject}
+                    </div>
+                    <div class="next-lesson-time">
+                        <span class="time-indicator">через ${next.minutesUntil} ${minutesStr}</span>
+                    </div>
+                    <div class="next-lesson-meta">
+                        ${next.start} — ${next.end}
+                        ${next.room ? `<br>Кабинет ${next.room}` : ''}
+                        ${next.teacher ? `<br>${next.teacher}` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTodayLessons() {
+            const today = getWeekday();
+            const lessons = appState.schedule[today] || [];
+            const container = document.getElementById('todayLessons');
+            const now = new Date();
+
+            if (lessons.length === 0) {
+                container.innerHTML = '<div style="color: var(--color-text-secondary); padding: 12px 0; text-align: center;">Уроков нет</div>';
+                return;
+            }
+
+            container.innerHTML = lessons.map(lesson => {
+                const start = parseTime(lesson.start);
+                const isCompleted = now > start;
+                const icon = getSubjectIcon(lesson.subject);
+                return `
+                    <div class="lesson-item ${isCompleted ? 'completed' : ''}">
+                        <div class="lesson-time">${lesson.start}</div>
+                        <div style="font-size: 1rem;">${icon}</div>
+                        <div class="lesson-name">${lesson.subject}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTomorrowLessons() {
+            const tomorrow = getWeekday(1);
+            const lessons = appState.schedule[tomorrow] || [];
+            const container = document.getElementById('tomorrowLessons');
+
+            if (lessons.length === 0) {
+                container.innerHTML = '<div style="color: var(--color-text-secondary); padding: 12px 0; text-align: center;">Уроков нет</div>';
+                return;
+            }
+
+            container.innerHTML = lessons.map(lesson => {
+                const icon = getSubjectIcon(lesson.subject);
+                return `
+                    <div class="lesson-item">
+                        <div class="lesson-time">${lesson.start}</div>
+                        <div style="font-size: 1rem;">${icon}</div>
+                        <div class="lesson-name">${lesson.subject}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== SCHEDULE PAGE ====================
+        function renderSchedulePage() {
+            const container = document.getElementById('daySelector');
+            container.innerHTML = DAYS_OF_WEEK.map((day, index) => {
+                const isActive = getWeekday() === index ? 'active' : '';
+                return `<button class="day-btn ${isActive}" data-day="${index}">${['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][index]}</button>`;
+            }).join('');
+
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderScheduleForDay(parseInt(btn.dataset.day));
+                });
+            });
+
+            renderScheduleForDay(getWeekday());
+        }
+
+        function renderScheduleForDay(day) {
+            const lessons = appState.schedule[day] || [];
+            const container = document.getElementById('scheduleContent');
+
+            if (lessons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <div class="empty-state-title">Расписание пусто</div>
+                        <div class="empty-state-text">${DAYS_OF_WEEK[day]} расписание не добавлено.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = lessons.map((lesson, index) => {
+                const icon = getSubjectIcon(lesson.subject);
+                return `
+                    <div class="card">
+                        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                            <div style="font-size: 1.5rem;">${icon}</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: var(--color-text);">${lesson.subject}</div>
+                                <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-top: 4px;">
+                                    ${lesson.start} — ${lesson.end}
+                                </div>
+                                ${lesson.room ? `<div style="font-size: 0.875rem; color: var(--color-text-secondary);">Кабинет ${lesson.room}</div>` : ''}
+                                ${lesson.teacher ? `<div style="font-size: 0.875rem; color: var(--color-text-secondary);">${lesson.teacher}</div>` : ''}
+                            </div>
+                            <button class="btn btn-danger" style="padding: 8px 12px; font-size: 0.75rem;" onclick="deleteLesson(${day}, ${index})">Удалить</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteLesson(day, index) {
+            if (confirm('Удалить этот урок?')) {
+                appState.schedule[day].splice(index, 1);
+                saveState();
+                renderScheduleForDay(day);
+                renderTodayLessons();
+                updateHomeScreen();
+            }
+        }
+
+        // ==================== HOMEWORK PAGE ====================
+        function renderHomeworkPage() {
+            const container = document.getElementById('homeworkContent');
+
+            if (appState.homework.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎉</div>
+                        <div class="empty-state-title">Домашних заданий нет</div>
+                        <div class="empty-state-text">Добавьте задания, чтобы отслеживать их здесь.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const grouped = {};
+            appState.homework.forEach(hw => {
+                if (!grouped[hw.subject]) grouped[hw.subject] = [];
+                grouped[hw.subject].push(hw);
+            });
+
+            container.innerHTML = Object.entries(grouped).map(([subject, items]) => {
+                const icon = getSubjectIcon(subject);
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-weight: 600; color: var(--color-text); margin-bottom: 12px; font-size: 0.95rem;">
+                            ${icon} ${subject}
+                        </div>
+                        ${items.map(hw => `
+                            <div class="homework-item ${hw.completed ? 'completed' : ''}">
+                                <input type="checkbox" class="homework-checkbox" ${hw.completed ? 'checked' : ''} onchange="toggleHomework('${hw.id}')">
+                                <div class="homework-content">
+                                    <div class="homework-task">${hw.task}</div>
+                                </div>
+                                <button class="btn btn-danger" style="padding: 6px 10px; font-size: 0.75rem;" onclick="deleteHomework('${hw.id}')">✕</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleHomework(id) {
+            const hw = appState.homework.find(h => h.id === id);
+            if (hw) {
+                hw.completed = !hw.completed;
+                saveState();
+                renderHomeworkPage();
+            }
+        }
+
+        function deleteHomework(id) {
+            if (confirm('Удалить это задание?')) {
+                appState.homework = appState.homework.filter(h => h.id !== id);
+                saveState();
+                renderHomeworkPage();
+            }
+        }
+
+        // ==================== SETTINGS PAGE ====================
+        function updateSettingsUI() {
+            const container = document.getElementById('settingsContent');
+
+            const schoolInfo = `
+                <div class="school-info">
+                    <div class="school-name">${appState.school.name || 'Школа не выбрана'}</div>
+                    <div class="school-class">${appState.school.class ? `${appState.school.class}${appState.school.letter ? ' ' + appState.school.letter : ''}` : 'Класс не выбран'}</div>
+                </div>
+            `;
+
+            const settingsHTML = `
+                ${schoolInfo}
+
+                <div class="settings-header">Профиль</div>
+                <button class="btn btn-secondary btn-block" id="editProfileBtn" style="margin-bottom: 20px;">
+                    Настроить профиль
+                </button>
+
+                <div class="settings-header">Тема</div>
+                <div class="theme-selector">
+                    <button class="theme-option ${appState.theme === 'light' ? 'active' : ''}" onclick="toggleTheme('light')">☀️ Светлая</button>
+                    <button class="theme-option ${appState.theme === 'dark' ? 'active' : ''}" onclick="toggleTheme('dark')">🌙 Тёмная</button>
+                    <button class="theme-option ${appState.theme === 'system' ? 'active' : ''}" onclick="toggleTheme('system')">⚙️ Система</button>
+                </div>
+
+                <div class="settings-header" style="margin-top: 24px;">Данные</div>
+                <button class="btn btn-secondary btn-block" id="exportBtn" style="margin-bottom: 12px;">
+                    ↓ Экспортировать
+                </button>
+                <button class="btn btn-secondary btn-block" id="importBtn" style="margin-bottom: 20px;">
+                    ↑ Импортировать
+                </button>
+
+                <div style="text-align: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <div style="font-weight: 600; color: var(--color-text); margin-bottom: 4px;">SchoolFlow</div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-secondary);">A product by NEXVIRO</div>
+                </div>
+            `;
+
+            container.innerHTML = settingsHTML;
+
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                openSchoolModal();
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                exportData();
+            });
+
+            document.getElementById('importBtn').addEventListener('click', () => {
+                importData();
+            });
+        }
+
+        function openSchoolModal() {
+            document.getElementById('schoolName').value = appState.school.name;
+            document.getElementById('schoolClass').value = appState.school.class;
+            document.getElementById('schoolLetter').value = appState.school.letter;
+            document.getElementById('schoolModal').classList.add('active');
+        }
+
+        // ==================== EXPORT/IMPORT ====================
+        function exportData() {
+            const data = {
+                version: 1,
+                exportDate: new Date().toISOString(),
+                schoolflow: appState
+            };
+
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `schoolflow-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('Данные экспортированы');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.schoolflow) {
+                            appState.school = data.schoolflow.school;
+                            appState.schedule = data.schoolflow.schedule;
+                            appState.homework = data.schoolflow.homework;
+                            saveState();
+
+                            // Refresh all pages
+                            updateHomeScreen();
+                            renderSchedulePage();
+                            renderHomeworkPage();
+                            updateSettingsUI();
+
+                            showToast('Данные импортированы');
+                        }
+                    } catch (err) {
+                        showToast('Ошибка при импорте');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ==================== MODALS ====================
+        function openLessonModal() {
+            document.getElementById('lessonForm').reset();
+            document.getElementById('lessonDay').value = getWeekday();
+            document.getElementById('lessonModal').classList.add('active');
+        }
+
+        function closeLessonModal() {
+            document.getElementById('lessonModal').classList.remove('active');
+        }
+
+        function openHomeworkModal() {
+            document.getElementById('homeworkForm').reset();
+            document.getElementById('homeworkModal').classList.add('active');
+        }
+
+        function closeHomeworkModal() {
+            document.getElementById('homeworkModal').classList.remove('active');
+        }
+
+        function closeSchoolModal() {
+            document.getElementById('schoolModal').classList.remove('active');
+        }
+
+        document.getElementById('lessonForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const day = parseInt(document.getElementById('lessonDay').value);
+            const subject = document.getElementById('lessonSubject').value;
+            const start = document.getElementById('lessonStart').value;
+            const end = document.getElementById('lessonEnd').value;
+            const room = document.getElementById('lessonRoom').value;
+            const teacher = document.getElementById('lessonTeacher').value;
+
+            if (!appState.schedule[day]) {
+                appState.schedule[day] = [];
+            }
+
+            appState.schedule[day].push({ subject, start, end, room, teacher });
+            appState.schedule[day].sort((a, b) => a.start.localeCompare(b.start));
+
+            saveState();
+            closeLessonModal();
+            updateHomeScreen();
+            renderSchedulePage();
+
+            showToast('Урок добавлен');
+        });
+
+        document.getElementById('homeworkForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const subject = document.getElementById('homeworkSubject').value;
+            const task = document.getElementById('homeworkTask').value;
+
+            appState.homework.push({
+                id: Date.now().toString(),
+                subject,
+                task,
+                completed: false
+            });
+
+            saveState();
+            closeHomeworkModal();
+            renderHomeworkPage();
+
+            showToast('Задание добавлено');
+        });
+
+        document.getElementById('schoolForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            appState.school.name = document.getElementById('schoolName').value;
+            appState.school.class = document.getElementById('schoolClass').value;
+            appState.school.letter = document.getElementById('schoolLetter').value;
+
+            saveState();
+            closeSchoolModal();
+            updateSettingsUI();
+
+            showToast('Профиль сохранён');
+        });
+
+        document.getElementById('closeLessonModal').addEventListener('click', closeLessonModal);
+        document.getElementById('closeHomeworkModal').addEventListener('click', closeHomeworkModal);
+        document.getElementById('closeSchoolModal').addEventListener('click', closeSchoolModal);
+
+        document.getElementById('addLessonBtn').addEventListener('click', openLessonModal);
+        document.getElementById('addHomeworkBtn').addEventListener('click', openHomeworkModal);
+
+        // Close modals on background click
+        document.getElementById('lessonModal').addEventListener('click', (e) => {
+            if (e.target.id === 'lessonModal') closeLessonModal();
+        });
+        document.getElementById('homeworkModal').addEventListener('click', (e) => {
+            if (e.target.id === 'homeworkModal') closeHomeworkModal();
+        });
+        document.getElementById('schoolModal').addEventListener('click', (e) => {
+            if (e.target.id === 'schoolModal') closeSchoolModal();
+        });
+
+        // ==================== NAVIGATION ====================
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+                if (page === 'schedule') {
+                    renderSchedulePage();
+                } else if (page === 'homework') {
+                    renderHomeworkPage();
+                } else if (page === 'settings') {
+                    updateSettingsUI();
+                }
+
+                // Update page title
+                const titles = { today: 'SchoolFlow', schedule: 'Расписание', homework: 'Домашние задания', settings: 'Ещё' };
+                document.getElementById('pageTitle').textContent = titles[page] || 'SchoolFlow';
+            });
+        });
+
+        // ==================== THEME TOGGLE ====================
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const themes = ['light', 'dark', 'system'];
+            const current = themes.indexOf(appState.theme);
+            const next = (current + 1) % themes.length;
+            toggleTheme(themes[next]);
+        });
+
+        // ==================== UTILITIES ====================
+        function updateHomeScreen() {
+            updateDateInfo();
+            renderCurrentLesson();
+            renderNextLesson();
+            renderTodayLessons();
+            renderTomorrowLessons();
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastSlideUp 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            initTheme();
+            updateHomeScreen();
+            renderSchedulePage();
+            renderHomeworkPage();
+            updateSettingsUI();
+
+            // Update time every minute
+            setInterval(updateHomeScreen, 60000);
+
+            // Show school modal if first time
+            if (!appState.school.name) {
+                setTimeout(() => {
+                    openSchoolModal();
+                }, 2500);
+            }
+        });
+
+        // Prevent scrolling on non-content area
+        document.addEventListener('touchmove', (e) => {
+            const appContent = document.querySelector('.app-content');
+            if (!appContent.contains(e.target)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
