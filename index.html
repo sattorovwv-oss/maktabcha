@@ -13,34 +13,36 @@
         }
 
         :root {
-            --color-primary: #6366f1;
-            --color-primary-dark: #4f46e5;
-            --color-bg: #ffffff;
-            --color-bg-secondary: #f8f9fa;
-            --color-text: #1a1a2e;
-            --color-text-secondary: #6b7280;
-            --color-border: #e5e7eb;
-            --color-success: #10b981;
-            --color-error: #ef4444;
-            --color-warning: #f59e0b;
+            --color-primary: #5b7cff;
+            --color-primary-light: #7b9fff;
+            --color-primary-dark: #3d5ce6;
+            --color-accent: #ff6b9d;
+            --color-success: #4ecdc4;
+            --color-warning: #ffd93d;
+            --color-danger: #ff6b6b;
+            --color-bg: #f5f7ff;
+            --color-bg-secondary: #ffffff;
+            --color-text: #2d3748;
+            --color-text-secondary: #718096;
+            --color-border: #e2e8f0;
             --color-card: #ffffff;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
-            --radius: 16px;
-            --radius-sm: 8px;
+            --shadow-sm: 0 2px 8px rgba(91, 124, 255, 0.08);
+            --shadow-md: 0 8px 16px rgba(91, 124, 255, 0.12);
+            --shadow-lg: 0 16px 32px rgba(91, 124, 255, 0.16);
+            --radius: 20px;
+            --radius-sm: 12px;
         }
 
         [data-theme="dark"] {
             --color-bg: #0f1419;
-            --color-bg-secondary: #1a1f2e;
-            --color-text: #f1f5f9;
-            --color-text-secondary: #cbd5e1;
-            --color-border: #334155;
-            --color-card: #1a1f2e;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.4);
+            --color-bg-secondary: #1a202c;
+            --color-text: #f7fafc;
+            --color-text-secondary: #cbd5e0;
+            --color-border: #2d3748;
+            --color-card: #1a202c;
+            --shadow-sm: 0 2px 8px rgba(91, 124, 255, 0.15);
+            --shadow-md: 0 8px 16px rgba(91, 124, 255, 0.2);
+            --shadow-lg: 0 16px 32px rgba(91, 124, 255, 0.25);
         }
 
         html {
@@ -98,12 +100,19 @@
         .splash-title {
             font-size: 3rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #5b7cff, #7b9fff, #5b7cff);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 16px;
             letter-spacing: -1px;
+            animation: splashIn 0.8s ease-out, gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .splash-subtitle {
@@ -135,17 +144,19 @@
         .app-header {
             padding: 20px;
             padding-top: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(91, 124, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(180deg, var(--color-bg) 0%, transparent 100%);
         }
 
         .header-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             color: var(--color-text);
+            letter-spacing: -0.5px;
         }
 
         .header-actions {
@@ -154,11 +165,11 @@
         }
 
         .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--color-bg-secondary);
-            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(91, 124, 255, 0.1), rgba(123, 159, 255, 0.05));
+            border: 1px solid rgba(91, 124, 255, 0.15);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -169,8 +180,9 @@
 
         .icon-btn:active {
             transform: scale(0.95);
-            background-color: var(--color-primary);
+            background: linear-gradient(135deg, #5b7cff, #7b9fff);
             color: white;
+            border-color: transparent;
         }
 
         .app-content {
@@ -206,27 +218,28 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--color-card);
-            border-top: 1px solid var(--color-border);
+            background: linear-gradient(180deg, var(--color-card) 0%, var(--color-card) 80%, transparent 100%);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(91, 124, 255, 0.08);
             display: flex;
             justify-content: space-around;
-            padding-bottom: max(0px, env(safe-area-inset-bottom));
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
             max-width: 640px;
             margin: 0 auto;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 -2px 20px rgba(91, 124, 255, 0.1);
         }
 
         .nav-item {
             flex: 1;
-            padding: 12px 0 8px;
+            padding: 14px 0 10px;
             text-align: center;
             cursor: pointer;
             border: none;
             background: none;
             color: var(--color-text-secondary);
             font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -241,13 +254,14 @@
         .nav-item.active::before {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: -12px;
             left: 50%;
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background-color: var(--color-primary);
+            background: linear-gradient(135deg, #5b7cff, #7b9fff);
             transform: translateX(-50%);
+            box-shadow: 0 0 8px rgba(91, 124, 255, 0.4);
         }
 
         .nav-icon {
@@ -274,17 +288,18 @@
         }
 
         .card {
-            background-color: var(--color-card);
+            background: linear-gradient(135deg, var(--color-card), var(--color-bg-secondary));
             border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 16px;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--color-border);
-            transition: all 0.2s ease;
+            border: 1px solid rgba(91, 124, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .card:active {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-md);
         }
 
@@ -298,9 +313,11 @@
         }
 
         .current-lesson {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            background: linear-gradient(135deg, #5b7cff 0%, #7b9fff 50%, #5b7cff 100%);
+            background-size: 200% 200%;
             color: white;
             border: none;
+            animation: gradientShift 3s ease infinite;
         }
 
         .lesson-title {
@@ -384,43 +401,49 @@
 
         .day-btn {
             flex: 1;
-            padding: 10px;
-            border: none;
+            padding: 12px;
+            border: 1.5px solid rgba(91, 124, 255, 0.1);
             background-color: var(--color-card);
             color: var(--color-text-secondary);
             border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
         }
 
         .day-btn.active {
-            background-color: var(--color-primary);
+            background: linear-gradient(135deg, #5b7cff, #7b9fff);
             color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(91, 124, 255, 0.3);
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px 40px;
             color: var(--color-text-secondary);
         }
 
         .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
         }
 
         .empty-state-title {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--color-text);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .empty-state-text {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             margin-bottom: 24px;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
         }
 
         .btn {
@@ -437,13 +460,14 @@
         }
 
         .btn-primary {
-            background-color: var(--color-primary);
+            background: linear-gradient(135deg, #5b7cff 0%, #7b9fff 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(91, 124, 255, 0.3);
         }
 
         .btn-primary:active {
-            background-color: var(--color-primary-dark);
             transform: scale(0.98);
+            box-shadow: 0 8px 16px rgba(91, 124, 255, 0.4);
         }
 
         .btn-secondary {
@@ -497,7 +521,7 @@
         }
 
         .modal-content {
-            background-color: var(--color-card);
+            background: linear-gradient(180deg, var(--color-card) 0%, var(--color-bg-secondary) 100%);
             width: 100%;
             border-radius: var(--radius) var(--radius) 0 0;
             padding: 24px 20px;
@@ -505,6 +529,7 @@
             animation: modalSlideUp 0.3s ease;
             max-height: 85vh;
             overflow-y: auto;
+            border-top: 1px solid rgba(91, 124, 255, 0.1);
         }
 
         @keyframes modalSlideUp {
@@ -517,12 +542,13 @@
         }
 
         .modal-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            letter-spacing: -0.5px;
         }
 
         .modal-close {
@@ -550,32 +576,40 @@
 
         .form-input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--color-border);
+            padding: 14px;
+            border: 1.5px solid rgba(91, 124, 255, 0.15);
             border-radius: var(--radius-sm);
             background-color: var(--color-bg);
             color: var(--color-text);
             font-size: 1rem;
             font-family: inherit;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: #5b7cff;
+            box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.1);
+            background-color: var(--color-card);
         }
 
         .form-select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--color-border);
+            padding: 14px;
+            border: 1.5px solid rgba(91, 124, 255, 0.15);
             border-radius: var(--radius-sm);
             background-color: var(--color-bg);
             color: var(--color-text);
             font-size: 1rem;
             font-family: inherit;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #5b7cff;
+            box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.1);
         }
 
         .checkbox {
@@ -605,16 +639,18 @@
 
         .toast {
             position: fixed;
-            bottom: 90px;
+            bottom: 100px;
             left: 20px;
             right: 20px;
-            background-color: var(--color-primary);
+            background: linear-gradient(135deg, #5b7cff 0%, #7b9fff 100%);
             color: white;
-            padding: 16px;
+            padding: 16px 20px;
             border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 8px 20px rgba(91, 124, 255, 0.3);
             animation: toastSlideUp 0.3s ease;
             z-index: 2000;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         @keyframes toastSlideUp {
@@ -629,17 +665,20 @@
         }
 
         .homework-item {
-            background-color: var(--color-card);
-            border: 1px solid var(--color-border);
+            background: linear-gradient(135deg, var(--color-card), var(--color-bg-secondary));
+            border: 1.5px solid rgba(91, 124, 255, 0.1);
             border-radius: var(--radius-sm);
             padding: 16px;
             margin-bottom: 12px;
             display: flex;
             gap: 12px;
+            transition: all 0.3s ease;
         }
 
         .homework-item.completed {
-            opacity: 0.6;
+            opacity: 0.5;
+            background: linear-gradient(135deg, rgba(76, 205, 196, 0.08), rgba(76, 205, 196, 0.04));
+            border-color: rgba(76, 205, 196, 0.2);
         }
 
         .homework-checkbox {
@@ -689,20 +728,22 @@
 
         .theme-option {
             flex: 1;
-            padding: 10px;
-            border: 2px solid var(--color-border);
+            padding: 12px;
+            border: 1.5px solid rgba(91, 124, 255, 0.2);
             border-radius: var(--radius-sm);
             text-align: center;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             background-color: var(--color-card);
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
         .theme-option.active {
-            border-color: var(--color-primary);
-            background-color: var(--color-primary);
+            border-color: transparent;
+            background: linear-gradient(135deg, #5b7cff, #7b9fff);
             color: white;
+            box-shadow: 0 4px 12px rgba(91, 124, 255, 0.3);
         }
 
         .settings-header {
@@ -716,29 +757,33 @@
         }
 
         .school-info {
-            background-color: var(--color-bg-secondary);
-            padding: 16px;
-            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, rgba(91, 124, 255, 0.1), rgba(123, 159, 255, 0.05));
+            padding: 20px;
+            border-radius: var(--radius);
             margin-bottom: 20px;
+            border: 1px solid rgba(91, 124, 255, 0.15);
         }
 
         .school-name {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--color-text);
+            letter-spacing: -0.5px;
         }
 
         .school-class {
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             color: var(--color-text-secondary);
-            margin-top: 4px;
+            margin-top: 8px;
+            font-weight: 500;
         }
 
         .next-lesson-card {
-            background-color: var(--color-bg-secondary);
-            border-radius: var(--radius-sm);
-            padding: 16px;
+            background: linear-gradient(135deg, rgba(91, 124, 255, 0.08), rgba(123, 159, 255, 0.04));
+            border-radius: var(--radius);
+            padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(91, 124, 255, 0.15);
         }
 
         .next-lesson-label {
@@ -1150,11 +1195,11 @@
 
             // Update greeting based on time
             const hour = now.getHours();
-            let greeting = 'Доброе утро 👋';
+            let greeting = 'Доброе утро';
             if (hour >= 12 && hour < 18) {
-                greeting = 'Добрый день 👋';
+                greeting = 'Добрый день';
             } else if (hour >= 18) {
-                greeting = 'Добрый вечер 👋';
+                greeting = 'Добрый вечер';
             }
             document.getElementById('greeting').textContent = greeting;
         }
@@ -1220,12 +1265,12 @@
 
             container.innerHTML = `
                 <div class="card current-lesson">
-                    <div class="card-header" style="color: rgba(255, 255, 255, 0.7);">СЕЙЧАС</div>
-                    <div class="lesson-title">
-                        <span class="lesson-icon">${getSubjectIcon(current.subject)}</span>
+                    <div class="card-header" style="color: rgba(255, 255, 255, 0.8); text-transform: uppercase; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px;">Текущий урок</div>
+                    <div class="lesson-title" style="color: white;">
+                        <span class="lesson-icon" style="background-color: rgba(255, 255, 255, 0.25);">${getSubjectIcon(current.subject)}</span>
                         ${current.subject}
                     </div>
-                    <div class="lesson-meta">
+                    <div class="lesson-meta" style="color: rgba(255, 255, 255, 0.9);">
                         ${current.room ? `Кабинет ${current.room}` : ''}
                         <br>
                         ${current.start} — ${current.end}
@@ -1249,10 +1294,10 @@
 
             const minutesStr = next.minutesUntil <= 1 ? 'минуту' : next.minutesUntil <= 4 ? 'минуты' : 'минут';
             container.innerHTML = `
-                <div class="next-lesson-card">
+                <div class="next-lesson-card" style="background: linear-gradient(135deg, rgba(91, 124, 255, 0.1), rgba(123, 159, 255, 0.1)); border: 1px solid rgba(91, 124, 255, 0.2);">
                     <div class="next-lesson-label">Следующий урок</div>
                     <div class="next-lesson-title">
-                        <span>${getSubjectIcon(next.subject)}</span>
+                        <span style="background: linear-gradient(135deg, #5b7cff, #7b9fff); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; margin-right: 8px;">●</span>
                         ${next.subject}
                     </div>
                     <div class="next-lesson-time">
@@ -1340,7 +1385,7 @@
             if (lessons.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📚</div>
+                        <div class="empty-state-icon">📖</div>
                         <div class="empty-state-title">Расписание пусто</div>
                         <div class="empty-state-text">${DAYS_OF_WEEK[day]} расписание не добавлено.</div>
                     </div>
@@ -1386,9 +1431,9 @@
             if (appState.homework.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">🎉</div>
-                        <div class="empty-state-title">Домашних заданий нет</div>
-                        <div class="empty-state-text">Добавьте задания, чтобы отслеживать их здесь.</div>
+                        <div class="empty-state-icon" style="font-size: 3rem;">✓</div>
+                        <div class="empty-state-title">Все задания выполнены</div>
+                        <div class="empty-state-text">Нет новых домашних заданий.</div>
                     </div>
                 `;
                 return;
